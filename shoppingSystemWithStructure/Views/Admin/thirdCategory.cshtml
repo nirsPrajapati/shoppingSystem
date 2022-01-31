@@ -1,0 +1,261 @@
+﻿@model shoppingSystemWithStructure.Models.thirdCatMasterModel
+@{
+    ViewBag.Title = "thirdCategory";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="modal fade" id="myModal" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Third Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Category Name</label>
+
+                        @*@Html.TextBoxFor(m => m.catId, new { @class = "form-control" })*@
+                        @Html.DropDownListFor(m => m.catId, new List<SelectListItem> { new SelectListItem { Text = "--select--", Value = " " } }, new { @class = "form-control", onchange = "bindsubCategory(catId)" })
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Category Name</label>
+                        @Html.DropDownListFor(m => m.subCatId, new List<SelectListItem> { new SelectListItem { Text = "--select--", Value = " " } }, new { @class = "form-control" })
+
+
+
+                        
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Category Name</label>
+
+                        @Html.TextBoxFor(m => m.thirdCatName, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Status:</label>
+
+                        @Html.DropDownListFor(m => m.status, new List<SelectListItem>()
+                           { new SelectListItem {Text="--select--",Value="",Selected=true },
+                           new SelectListItem {Text="Active",Value="1" },
+                           new SelectListItem {Text="Deactive",Value="0" }
+
+                           }
+
+                           , new { @class = "form-control" })
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+
+                <input type="button" id="btnclose" class="btn btn-secondary" name="name" value="Close" />
+                <input type="button" id="btnSave" class="btn btn-primary" name="name" value="Save" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pp">
+    <div class="loader"></div>
+</div>
+
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Third Categories</h1>
+    @*<a href="@Url.Action("Category")" id="btnAddNew" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fa fa-plus fa-sm text-white-50 mr-2"></i>Add New</a>*@
+    <button id="btnAddNew" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">Add New</button>
+</div>
+
+<div class="card shadow-sm">
+
+    <div class="card-header">
+        <h5>Third Categories</h5>
+    </div>
+    <div class="card-body table-responsive">
+        <table id="tblGetData" class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+
+                    <th>Category Name</th>
+                    <th>Sub Category Name</th>
+                    <th>Third Category Name</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+</div>
+@section JS
+{
+    <script>
+        $(document).ready(function () {
+            thirdCategoryList();
+            fillCategory();
+            
+           
+        });
+        function fillCategory() {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/categoryMasterAPI/selectCategoryMaster',
+                data: {},
+                success: function (retData) {
+
+                    console.log(retData);
+                    for (var i = 0; i < retData.length; i++) {
+                        $("#catId").append($("<option></option>").val(retData[i].catId).html(retData[i].catName));
+                    }
+
+
+
+                }
+
+
+            });
+        }
+        $("#btnAddNew").on('click', function () {
+            $("#catName").val("");
+            $("#status").val("");
+            $("#btnSave").val("Save");
+            $('#myModal').modal('show');
+        });
+
+        function bindsubCategory(categoryId)
+        {
+            var cid = categoryId.value;
+            $.ajax({
+                type: 'GET',
+                url: '/api/categoryMasterAPI/selectSubCatMasterByCatId',
+                data: { catId: cid },
+                success: function (retData) {
+                    $("#subCatId").html("");
+                    $("#subCatId").append($("<option></option>").val("").html("--select--"));
+
+                    for (var i = 0; i <retData.length; i++) {
+                        $("#subCatId").append($("<option></option>").val(retData[i].subCatId).html(retData[i].subCatName));
+                    }
+                }
+            });
+           
+           
+        }
+        $("#btnSave").on('click', function () {
+            if (parseInt($("#hidCatId").val()) > 0) {
+
+                var model = {
+                    // status: $("#subCatId").val(),
+                    catName: $("#thirdCatName").val(),
+                    status: $("#status").val(),
+                    status: $("#catId").val(),
+                    status: $("#subCatId").val(),
+                };
+            }
+            else {
+                var model = {
+
+
+                    thirdCatName: $("#thirdCatName").val(),
+                    status: $("#status").val(),
+                    catId: $("#catId").val(),
+                    subCatId: $("#subCatId").val()
+
+                };
+            }
+
+
+            $.ajax({
+
+                type: "POST",
+                url: "/api/categoryMasterAPI/InsertUpdatethirdCategoryMaster",
+                data: model,
+                dataType: "json",
+                success: function (retData) {
+                    if (parseInt(retData) > 0) {
+
+                        $('#myModal').modal('hide');
+
+                        if (parseInt(retData) == 1) {
+                            alertify.success("<span class='text-white'>Successfully add category</span>");
+
+                        }
+                        else if (parseInt(retData) == 2) {
+                            alertify.success("<span class='text-white'>Successfully update category</span>");
+                            $("#hidCatId").val("");
+                        }
+                        else if (parseInt(retData) == 3) {
+                            alertify.success("<span class='text-white'>Alredy Exits...</span>");
+
+                        }
+                    }
+                
+                },
+                beforeSend: function () {
+                    $(".pp").fadeIn(600);
+                },
+                complete: function () {
+                    $(".pp").fadeOut(600);
+                }
+            });
+        });
+
+        function thirdCategoryList() {
+            debugger;
+            $.ajax({
+                type: 'GET',
+                url: '/api/categoryMasterAPI/selectthirdCategoryMaster',
+                data: {},
+                success: function (retData) {
+                    var tBody = $("#tblGetData > tbody").html("");
+                    var tBody = $("#tblGetData > tbody");
+                    debugger;
+                    for (var i = 0; i < retData.length; i++) {
+                        debugger;
+                        if (retData[i].status == 0) {
+                            var sts = "Deactive";
+                        }
+                        else {
+                            var sts = "Active";
+                        }
+                        tBody.append('<tr>' +
+                             '<td>' + retData[i].thirdCatId + '</td>' +
+                             '<td>' + retData[i].catName + '</td>' +
+                             '<td>' + retData[i].subCatName + '</td>' +
+                             '<td>' + retData[i].thirdCatName + '</td>' +
+                             '<td>' + sts + '</td>' +
+
+                             '<td>' + retData[i].UpdateOn + '</td>' +
+                              '<td><a onclick="editCatMaster(' + retData[i].catId + ')" class="btn btn-info"><i class="fa fa-edit"></i></a><a href="#" class="btn btn-danger mt-1"  ><i class="fa fa-trash"></i></a> </td>' +
+
+
+                             +'</tr>')
+                    }
+
+                    $('#tblGetData').DataTable();
+
+
+
+                },
+                beforeSend: function () {
+                    $(".pp").fadeIn(600);
+                },
+                complete: function () {
+                    $(".pp").fadeOut(600);
+                }
+
+            });
+        }
+
+    </script>
+    }
+

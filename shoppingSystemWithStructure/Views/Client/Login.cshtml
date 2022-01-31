@@ -1,0 +1,139 @@
+﻿@model shoppingSystemWithStructure.Models.UserMasterModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_ClientLayout.cshtml";
+}
+
+<section class="middle">
+    <div class="container">
+        <div class="row align-items-start justify-content-between">
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <form class="border p-3 rounded">
+                    <div class="form-group">
+                        <label>Email</label>
+                        
+                        @Html.TextBoxFor(m=>m.UserEmail,new {@class="form-control" , placeholder = "Username*" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                       
+                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", placeholder = "Password*", type = "password" })
+
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="flex-1">
+                                <input id="dd" class="checkbox-custom" name="dd" type="checkbox">
+                                <label for="dd" class="checkbox-custom-label">Remember Me</label>
+                            </div>
+                            <div class="eltio_k2">
+                                <a href="#">Lost Your Password?</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                       
+                        <input type="button" id="btnlogin" name="name" class="btn btn-md full-width bg-dark text-light fs-md ft-medium" value="Login" />
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mfliud">
+                <form class="border p-3 rounded">
+
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label>First Name *</label>
+                            <input type="text" class="form-control" placeholder="First Name">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Last Name</label>
+                            <input type="text" class="form-control" placeholder="Last Name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="text" class="form-control" placeholder="Username*">
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label>Password *</label>
+                            <input type="password" class="form-control" placeholder="Password*">
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>Confirm Password *</label>
+                            <input type="password" class="form-control" placeholder="Confirm Password*">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <p>By registering your details, you agree with our Terms & Conditions, and Privacy and Cookie Policy.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="flex-1">
+                                <input id="ddd" class="checkbox-custom" name="ddd" type="checkbox">
+                                <label for="ddd" class="checkbox-custom-label">Sign me up for the Newsletter!</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-md full-width bg-dark text-light fs-md ft-medium">Create An Account</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</section>
+@section JS{
+    <script>
+        $('#btnlogin').on('click', function () {
+          
+            var em = $("#UserEmail").val();
+            var ps = $("#Password").val();
+            $.ajax({
+
+                type: "GET",
+                url: "/api/ClientAPIController/selectUserMasterByemailAndPassword",
+                data: { email: em, password:ps},
+                dataType: "json",
+                success: function (retData) {
+                   
+                    debugger;
+                    if (JSON.stringify(retData) > 0) {
+                       //$.session.set("UserId", "hii");
+                        // alert("sesion value  " + $.session.get('UserId'));
+                        sessionStorage.UserId = retData;
+                       // sessionStorage.clear();
+                        window.location.href = '/Client/Index';
+
+
+                    }
+                    else {
+                        alertify.error("<span class='text-light'>Email and Password wrong.</span>");
+                    }
+                },
+                beforeSend: function () {
+                    $(".pp").fadeIn(600);
+                },
+                complete: function () {
+                    $(".pp").fadeOut(600);
+                }
+            });
+
+        });
+    </script>
+    
+    }
+

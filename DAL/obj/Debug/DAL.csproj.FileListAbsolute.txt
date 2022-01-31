@@ -1,0 +1,10 @@
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\bin\Debug\DAL.dll.config
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\bin\Debug\DAL.dll
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\bin\Debug\DAL.pdb
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\bin\Debug\EntityFramework.dll
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\bin\Debug\EntityFramework.SqlServer.dll
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\bin\Debug\EntityFramework.xml
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\bin\Debug\EntityFramework.SqlServer.xml
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\obj\Debug\DAL.dll
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\obj\Debug\DAL.pdb
+E:\MVC\MVCPAC\shoppingSystemWithStructure\DAL\obj\Debug\DAL.csprojResolveAssemblyReference.cache

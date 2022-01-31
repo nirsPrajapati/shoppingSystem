@@ -1,0 +1,145 @@
+﻿@model shoppingSystemWithStructure.Models.productMasterModel
+@{
+    ViewBag.Title = "product";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Add Product</h1>
+    <a href="@Url.Action("productList")" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fa fa-angle-left fa-sm text-white-50 mr-2"></i>Back</a>
+</div>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5>Add Product</h5>
+    </div>
+    @if (ViewBag.msg != null)
+    {
+        <script>
+            alert("@ViewBag.msg");
+        </script>
+    }
+
+    <div class="pp">
+        <div class="loader"></div>
+    </div>
+    @using (Html.BeginForm("addProduct", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "formProduct" }))
+    {
+        @Html.HiddenFor(m=>m.productId)
+        @Html.HiddenFor(m=>m.showImg)
+      
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Category</label>
+                        @Html.DropDownListFor(m => m.CategoryId, new List<SelectListItem> { new SelectListItem { Text = "--select--", Value = "" } }, new { @class = "form-control", onchange = "bindsubCategory(this)", id = "dropCatId" })
+                        @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Sub Category</label>
+                        @Html.DropDownListFor(m => m.subCatId, new List<SelectListItem>{
+                                    new SelectListItem { Value="",Text="--select--"}
+                       }, new { @class = "form-control", id = "dropsubCatId", onchange = "bindthirdCategory(document.getElementById('dropCatId'),this)" })
+                        @Html.ValidationMessageFor(m => m.subCatId, "", new { @class = "text-danger" })
+
+
+
+
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Third Category</label>
+                        @Html.DropDownListFor(m => m.thirdCatId, new List<SelectListItem>{
+                                    new SelectListItem { Value="",Text="--select--"}
+                       }, new { @class = "form-control", id = "dropThirdcatId" })
+                        @Html.ValidationMessageFor(m => m.thirdCatId, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="form-group">
+                <label>Product Name</label>
+                @Html.TextBoxFor(m => m.ProductName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ProductName, "", new { @class = "text-danger" })
+
+
+            </div>
+            <div class="form-group">
+                <label>Product price</label>
+                @Html.TextBoxFor(m => m.ProductPrice, new { @class = "form-control", type = "number" })
+
+                @Html.ValidationMessageFor(m => m.ProductPrice, "", new { @class = "text-danger" })
+
+
+
+
+            </div>
+            <div class="form-group">
+                <label>Color</label>
+                @Html.TextBoxFor(m => m.Color, new { @class = "form-control", type = "color" })
+                @Html.ValidationMessageFor(m => m.Color, "", new { @class = "text-danger" })
+
+
+
+
+            </div>
+            <div class="form-group">
+                <label>Discription</label>
+                @Html.TextAreaFor(m => m.Discription, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Discription, "", new { @class = "text-danger" })
+
+
+
+
+            </div>
+
+            <div class="form-group">
+                <label>Image</label>
+                @Html.TextBoxFor(m => m.ProductImage, new { type = "file" })<br />
+
+
+
+
+
+
+
+            </div>
+
+            <div class="form-group">
+
+                @*@if (Model.showImg == null)
+                {
+                    <img id="imgPreview" src="#" height="100" width="100" />
+
+                }
+                else
+                {
+                    <img src="@Url.Content(Model.showImg)" height="100" width="100" />
+
+                }*@
+
+                <img id="imgPreview" src="#" height="100" width="100" />
+
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <input type="button" class="btn btn-success" id="btnSave" name="Save" value="Save" />
+            <input type="reset" class="btn btn-danger" name="Cancle" value="Cancle" />
+        </div>
+    }
+</div>
+@section JS
+{
+    
+<script src="~/AjaxCall/productMasterAjaxCall.js"></script>
+
+}
+
+
+

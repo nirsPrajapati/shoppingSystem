@@ -1,0 +1,266 @@
+﻿@model shoppingSystemWithStructure.Models.categoryMasterModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Category</title>
+   
+</head>
+<body>
+    
+
+
+
+    <div class="modal fade" id="myModal" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formProduct">
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">Category Name</label>
+
+                            @Html.TextBoxFor(m => m.catName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m=>m.catName,"",new { @class="text-danger"})
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Status:</label>
+
+                            @Html.DropDownListFor(m => m.status, new List<SelectListItem>()
+                           { new SelectListItem {Text="--select--",Value="" },
+                           new SelectListItem {Text="Active",Value="1" },
+                           new SelectListItem {Text="Deactive",Value="0" }
+
+                           }
+
+                           , new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.status, "", new { @class = "text-danger" })
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    
+                    <input type="button" class="btn btn-secondary" id="btnclose" name="name" value="Close" />
+                    <input type="button" id="btnSave" class="btn btn-primary" name="name" value="Save" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pp">
+        <div class="loader"></div>
+    </div>
+
+    @Html.HiddenFor(m => m.catId,new { id="hidCatId" })
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Categories</h1>
+        @*<a href="@Url.Action("Category")" id="btnAddNew" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fa fa-plus fa-sm text-white-50 mr-2"></i>Add New</a>*@
+        <button id="btnAddNew" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">Add New</button>
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <h5>Categories</h5>
+        </div>
+        <div class="card-body table-responsive">
+            <table id="tblGetData" class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>CategoryName</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    @*}*@
+
+    @section JS
+    {
+
+        <script>
+
+            $(document).ready(function () {
+                debugger;
+                getCategory();
+            });
+
+            function editCatMaster(catId) {
+                $.ajax({
+
+                    type: "GET",
+                    url: "/api/categoryMasterAPI/categoryMasterByid",
+                    data: { CatId: catId },
+                    dataType: "json",
+                    success: function (retData) {
+
+                        $("#catName").val(retData.catName);
+                        $("#status").val(retData.status);
+                        $("#hidCatId").val(retData.catId);
+                        $('#myModal').modal('show');
+                        $("#btnSave").val("Update");
+
+                    },
+                    beforeSend: function () {
+                        $(".pp").fadeIn(600);
+                    },
+                    complete: function () {
+                        $(".pp").fadeOut(600);
+                    }
+                });
+            }
+
+            $("#btnAddNew").on('click', function () {
+                debugger;
+
+                $("#catName").val("");
+                $("#status").val("");
+                $("#btnSave").val("Save");
+                $('#myModal').modal('show');
+            });
+
+            $("#btnclose").on('click', function () {
+           
+           
+                $("#hidCatId").val("");
+               
+                $('#myModal').modal('hide');
+            });
+
+            $("#btnSave").on('click', function () {
+
+                var _this = $(this);
+                console.log(_this);
+                var _form = $("#formProduct");
+                console.log(_form);
+                var validator = _form.validate(); // obtain validator
+                var anyError = false;
+                _form.find("input,select,textarea").each(function () {
+                    if (!validator.element(this)) { // validate every input element inside this step
+                        anyError = true;
+                    }
+                });
+                console.log(anyError);
+                if (anyError) {
+                    return false;
+                }
+                debugger;
+                if (parseInt($("#hidCatId").val())>0) {
+                
+                    var model = {
+
+                        catId: $("#hidCatId").val(),
+                        catName: $("#catName").val(),
+                        status: $("#status").val()
+                    };
+                }
+                else {
+                    var model = {
+
+                       
+                        catName: $("#catName").val(),
+                        status: $("#status").val()
+                    };
+                }
+               
+
+                $.ajax({
+
+                    type: "POST",
+                    url: "/api/categoryMasterAPI/InsertUpdateCategoryMaster",
+                    data: model,
+                    dataType: "json",
+                    success: function (retData) {
+                        if (parseInt(retData) > 0) {
+
+                            $('#myModal').modal('hide');
+
+                            if (parseInt(retData) == 1) {
+                                alertify.success("<span class='text-white'>Successfully add category</span>");
+                                
+                            }
+                            else if (parseInt(retData) == 2) {
+                                alertify.success("<span class='text-white'>Successfully update category</span>");
+                                $("#hidCatId").val("");
+                            }
+                            else if (parseInt(retData) == 3) {
+                                alertify.success("<span class='text-white'>Alredy Exits...</span>");
+                               
+                            }
+                        }
+                        getCategory();
+                    },
+                    beforeSend: function () {
+                        $(".pp").fadeIn(600);
+                    },
+                    complete: function () {
+                        $(".pp").fadeOut(600);
+                    }
+                });
+
+            });
+
+
+            function getCategory() {
+                debugger;
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/categoryMasterAPI/selectCategoryMaster',
+                    data: {},
+                    success: function (retData) {
+                        var tBody = $("#tblGetData > tbody").html("");
+                        var tBody = $("#tblGetData > tbody");
+                        debugger;
+                        for (var i = 0; i < retData.length; i++) {
+                            if (retData[i].status == 0) {
+                                var sts = "Deactive";
+                            }
+                            else {
+                                var sts = "Active";
+                            }
+                            tBody.append('<tr>' +
+                                 '<td>' + retData[i].catId + '</td>' +
+                                 '<td>' + retData[i].catName + '</td>' +
+
+                                 '<td>' + sts + '</td>' +
+                                  '<td><a onclick="editCatMaster(' + retData[i].catId + ')" class="btn btn-info"><i class="fa fa-edit"></i></a><a href="#" class="btn btn-danger mt-1"  ><i class="fa fa-trash"></i></a> </td>' +
+
+
+                                 +'</tr>')
+                        }
+
+                        $('#tblGetData').DataTable();
+
+
+
+                    },
+                    beforeSend: function () {
+                        $(".pp").fadeIn(600);
+                    },
+                    complete: function () {
+                        $(".pp").fadeOut(600);
+                    }
+
+                });
+            }
+        </script>
+    }
+</body>
+
+</html>
